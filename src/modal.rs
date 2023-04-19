@@ -19,8 +19,9 @@ pub struct ModalProperties {
 
 pub struct Modal {
   pub item: Item,
-  pub name: String,
-  pub price: String,
+  pub nome: String,
+  pub descricao: String,
+  pub relatorio: String,
   pub visible: bool,
   pub on_close: Callback<bool>,
   pub on_save: Callback<Item>,
@@ -30,8 +31,9 @@ pub struct Modal {
 
 pub enum ModalMsg {
   HideModal,
-  SetName(String),
-  SetPrice(String),
+  SetNome(String),
+  SetDescricao(String),
+  SetRelatorio(String),
   Save
 }
 
@@ -42,8 +44,9 @@ impl Component for Modal {
   fn create(prop: Self::Properties, link: ComponentLink<Self>) -> Self {
     Self {
       item: prop.item,
-      name: "".to_string(),
-      price: "".to_string(),
+      nome: "".to_string(),
+      descricao: "".to_string(),
+      relatorio: "".to_string(),
       visible: prop.visible,
       on_close: prop.on_close,
       on_save: prop.on_save,
@@ -61,20 +64,26 @@ impl Component for Modal {
         true
       }
 
-      ModalMsg::SetName(name) => {
-        self.name = name;
+      ModalMsg::SetNome(nome) => {
+        self.nome = nome;
 
         true
       }
 
-      ModalMsg::SetPrice(price) => {
-        self.price = price;
+      ModalMsg::SetDescricao(descricao) => {
+        self.descricao = descricao;
+
+        true
+      }
+
+      ModalMsg::SetRelatorio(relatorio) => {
+        self.relatorio = relatorio;
 
         true
       }
 
       ModalMsg::Save => {
-        let form_data: ItemFormData = (self.name.clone(), self.price.clone()).into();
+        let form_data: ItemFormData = (self.nome.clone(), self.descricao.clone(), self.relatorio.clone()).into();
         let valid = ItemFormData::validate(&form_data);
 
         match valid {
@@ -82,8 +91,9 @@ impl Component for Modal {
             self.visible = false;
             self.on_save.emit(Item {
               id: self.item.id,
-              name: form_data.name,
-              price: form_data.price.parse().unwrap(),
+              nome: form_data.nome,
+              descricao: form_data.descricao,
+              relatorio: form_data.relatorio,
               ..Default::default()
             });
 
@@ -101,8 +111,9 @@ impl Component for Modal {
   }
 
   fn change(&mut self, props: Self::Properties) -> ShouldRender {
-    self.name = props.item.name.clone();
-    self.price = props.item.price.to_string();
+    self.nome = props.item.nome.clone();
+    self.descricao = props.item.descricao.clone();
+    self.relatorio = props.item.relatorio.clone();
     self.item = props.item;
     self.visible = props.visible;
     self.error = None;
@@ -115,14 +126,19 @@ impl Component for Modal {
 
     let error = |e: &ItemValidationErr| {
       match e {
-        ItemValidationErr::InvalidName => html! {
+        ItemValidationErr::InvalidNome => html! {
           <div>
-            {"Name is required"}
+            {"Nome é requirido"}
           </div>
         },
-        ItemValidationErr::InvalidPrice => html! {
+        ItemValidationErr::InvalidDescricao => html! {
           <div>
-            {"Invalid Price"}
+            {"Descrição invalida"}
+          </div>
+        },
+        ItemValidationErr::InvalidRelatorio => html! {
+          <div>
+            {"Relatório invalido"}
           </div>
         }
       }
@@ -142,10 +158,10 @@ impl Component for Modal {
       }
     };
 
-    let title = if self.item.name.is_empty() {
-      "New Item"
+    let title = if self.item.nome.is_empty() {
+      "Nova Tarefa"
     } else {
-      "Update Item"
+      "Atualizar Tarefa"
     };
 
     html! {
@@ -164,19 +180,25 @@ impl Component for Modal {
             <section class="modal-card-body">
               {errors}
               <div class="field">
-                <label class="label">{"Name"}</label>
+                <label class="label">{"Nome"}</label>
                 <div class="control">
-                <TextInput value=&self.name oninput=self.link.callback(|val: String| ModalMsg::SetName(val))/>
+                <TextInput value=&self.nome oninput=self.link.callback(|val: String| ModalMsg::SetNome(val))/>
                 </div>
               </div>
 
               <div class="field">
-                <label class="label">{"Price"}</label>
+                <label class="label">{"Descricao"}</label>
                 <p class="control has-icons-left has-icons-right">
-                  <TextInput value=&self.price oninput=self.link.callback(|val: String| ModalMsg::SetPrice(val))/>
-                  <span class="icon is-small is-left">
-                    <i class="icon ion-md-cash"></i>
-                  </span>
+                  <TextInput value=&self.descricao oninput=self.link.callback(|val: String| ModalMsg::SetDescricao(val))/>
+                  
+                </p>
+              </div>
+
+              <div class="field">
+                <label class="label">{"Relatorio"}</label>
+                <p class="control has-icons-left has-icons-right">
+                  <TextInput value=&self.relatorio oninput=self.link.callback(|val: String| ModalMsg::SetRelatorio(val))/>
+                  
                 </p>
               </div>
             </section>

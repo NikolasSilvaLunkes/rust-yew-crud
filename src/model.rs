@@ -137,10 +137,10 @@ impl Component for Model {
           <div class="hero-body">
             <div class="container">
               <p class="title">
-                {{ "Items" }}
+                {{ "Tarefas" }}
               </p>
               <p class="subtitle">
-                {{"List of items"}}
+                {{"Lista de tarefas"}}
               </p>
             </div>
           </div>
@@ -164,9 +164,11 @@ impl Model {
           <thead>
             <tr>
               <th>{"Id"}</th>
-              <th>{"Name"}</th>
-              <th>{"Price"}</th>
-              <th colspan="2"></th>
+              <th>{"Nome"}</th>
+              <th>{"Descricao"}</th>
+              <th>{"Relatorio"}</th>
+              <th>{"Editar"}</th>
+              <th>{"Remover"}</th>
             </tr>
           </thead>
           <tbody>
@@ -175,7 +177,7 @@ impl Model {
         </table>
 
         <div>
-          <button onclick=self.link.callback(|_| { Msg::New }) type="button" class="button is-info">{"Add"}</button>
+          <button onclick=self.link.callback(|_| { Msg::New }) type="button" class="button is-info">{"Adicionar"}</button>
         </div>
       </>
     }
@@ -185,10 +187,11 @@ impl Model {
     html! {
     <tr>
       <td>{&item.id}</td>
-      <td>{&item.name}</td>
-      <td>{&item.price}</td>
-      <td><button onclick=self.link.callback(move |_| { Msg::Edit(idx) }) type="button" class="button is-info is-outlined">{"Edit"}</button></td>
-      <td><button onclick=self.link.callback(move |_| { Msg::Remove(idx) }) type="button" class="button is-danger is-outlined">{"Remove"}</button></td>
+      <td>{&item.nome}</td>
+      <td>{&item.descricao}</td>
+      <td>{&item.relatorio}</td>
+      <td><button onclick=self.link.callback(move |_| { Msg::Edit(idx) }) type="button" class="button is-info is-outlined">{"Editar"}</button></td>
+      <td><button onclick=self.link.callback(move |_| { Msg::Remove(idx) }) type="button" class="button is-danger is-outlined">{"Remover"}</button></td>
     </tr>
   }
   }

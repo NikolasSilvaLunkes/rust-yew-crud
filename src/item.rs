@@ -4,39 +4,49 @@ use serde::{Serialize, Deserialize};
 #[derive(Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Item {
   pub id: usize,
-  pub name: String,
-  pub price: f32
+  pub nome: String,
+  pub descricao: String,
+  pub relatorio: String
 }
 
 #[derive(Default, PartialEq)]
 pub struct ItemFormData {
-  pub name: String,
-  pub price: String
+  pub nome: String,
+  pub descricao: String,
+  pub relatorio: String
 }
 
 #[derive(Debug, PartialEq)]
 pub struct ValidatedItem {
-  name: String,
-  price: String
+  nome: String,
+  descricao: String,
+  relatorio: String
 }
 
 #[derive(Debug, PartialEq)]
 pub enum ItemValidationErr {
-  InvalidName,
-  InvalidPrice
+  InvalidNome,
+  InvalidDescricao,
+  InvalidRelatorio
 }
 
 impl ItemFormData {
   pub fn validate(form_data: &ItemFormData) -> Result<ValidatedItem, Vec<ItemValidationErr>> {
     let mut errors = vec![];
 
-    let name = ItemFormData::validate_name(String::from(&form_data.name))
+    let nome = ItemFormData::validate_nome(String::from(&form_data.nome))
       .unwrap_or_else(|e| {
         errors.push(e);
         String::from("")
       });
 
-    let price = ItemFormData::validate_price(String::from(&form_data.price))
+    let descricao = ItemFormData::validate_descricao(String::from(&form_data.descricao))
+      .unwrap_or_else(|e| {
+        errors.push(e);
+        String::from("")
+      });
+
+    let relatorio = ItemFormData::validate_relatorio(String::from(&form_data.relatorio))
       .unwrap_or_else(|e| {
         errors.push(e);
         String::from("")
@@ -46,34 +56,44 @@ impl ItemFormData {
       return Err(errors);
     }
 
-    Ok( ValidatedItem { name, price } )
+    Ok( ValidatedItem { nome, descricao, relatorio } )
   }
 
-  fn validate_name(name: String) -> Result<String, ItemValidationErr> {
-    if name.len() > 1 {
-      Ok(name)
+  fn validate_nome(nome: String) -> Result<String, ItemValidationErr> {
+    if nome.len() > 1 {
+      Ok(nome)
     } else {
-      Err(ItemValidationErr::InvalidName)
+      Err(ItemValidationErr::InvalidNome)
     }
   }
 
-  fn validate_price(price: String) -> Result<String, ItemValidationErr> {
-    if price.parse::<f64>().is_ok() {
-      Ok(price)
+  fn validate_descricao(descricao: String) -> Result<String, ItemValidationErr> {
+    if descricao.len() > 1 {
+      Ok(descricao)
     } else {
-      Err(ItemValidationErr::InvalidPrice)
+      Err(ItemValidationErr::InvalidDescricao)
+    }
+  }
+
+  fn validate_relatorio(relatorio: String) -> Result<String, ItemValidationErr> {
+    if relatorio.len() < 244 {
+      Ok(relatorio)
+    } else {
+      Err(ItemValidationErr::InvalidRelatorio)
     }
   }
 }
 
-impl From<(String, String)> for ItemFormData {
-  fn from(fd: (String, String)) -> Self {
-    let name = fd.0;
-    let price = fd.1;
+impl From<(String, String, String)> for ItemFormData {
+  fn from(fd: (String, String, String)) -> Self {
+    let nome = fd.0;
+    let descricao = fd.1;
+    let relatorio = fd.2;
 
     Self {
-      name,
-      price,
+      nome,
+      descricao,
+      relatorio,
       ..Default::default()
     }
   }
